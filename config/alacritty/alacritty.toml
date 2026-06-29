@@ -1,0 +1,36 @@
+# Alacritty — the GPU canvas. No tabs (tmux does multiplexing). Keep this lean.
+# Edit + save reloads live (live_config_reload), so you can tweak and see it instantly.
+
+[general]
+import              = ["~/.config/alacritty/themes/dracula-darker.toml"]
+live_config_reload  = true
+
+[env]
+TERM = "xterm-256color"
+
+[window]
+padding         = { x = 10, y = 8 }
+dynamic_padding = true
+decorations     = "full"        # try "buttonless" for a cleaner frameless look later
+opacity         = 0.98          # subtle; set 1.0 for fully solid
+option_as_alt   = "Both"        # makes the macOS Option key send Alt (useful in tmux/nvim)
+startup_mode    = "Windowed"
+
+[font]
+size   = 14.0
+normal = { family = "JetBrainsMono Nerd Font Mono", style = "Regular" }
+bold   = { family = "JetBrainsMono Nerd Font Mono", style = "Bold" }
+italic = { family = "JetBrainsMono Nerd Font Mono", style = "Italic" }
+
+[cursor]
+style = { shape = "Block", blinking = "On" }
+
+[scrolling]
+history = 10000
+
+# Auto-attach (or create) tmux on launch. When you detach (Ctrl-a d) or exit
+# tmux, `exec zsh -l` drops you into a plain shell instead of closing the window.
+# Re-enter the IDE with  tmux a  (attach) or  dev.
+[terminal.shell]
+program = "/bin/zsh"
+args    = ["-l", "-c", "tmux new-session -A -s main; exec zsh -l"]

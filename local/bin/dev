@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# dev — open the 4-pane IDE layout for the current project directory.
+#
+#   ┌─────────────────────────┬──────────────────────┐
+#   │ nvim   (pane 1)         │ cheatsheet (pane 2)   │
+#   │                         ├──────────────────────┤
+#   ├─────────────────────────┤ agent / claude (.3)  │
+#   │ shell  (pane 4)         │                      │
+#   └─────────────────────────┴──────────────────────┘
+#   (right column widened to fit the 4-column cheatsheet)
+#
+# Usage:   dev                 (resumes the last Claude session here; fresh if none)
+#          AGENT_CMD=claude dev          (always a fresh Claude session)
+#          AGENT_CMD=opencode dev        (use opencode instead)
+set -euo pipefail
+
+dir="$PWD"
+name="$(basename "$dir" | tr ' .' '__')"
+# Default: continue the most recent Claude conversation in this dir, else start fresh.
+agent="${AGENT_CMD:-claude --continue 2>/dev/null || claude}"
+
+build() {            # $1 = "session:window" target whose pane .1 is the start pane
+  local win="$1" wh ww rcols cheat_rows claude_rows
+  wh=$(tmux display -p -t "$win" '#{window_height}')
+  ww=$(tmux display -p -t "$win" '#{window_width}')
+
+  # Right column wide enough for the 4-column cheatsheet (~185 cols + margin),
+  # but never starve the editor — fall back to half-width on a narrow screen.
+  rcols=190
+  (( ww - rcols < 80 )) && rcols=$(( ww / 2 ))
+
+  tmux send-keys -t "${win}.1" "nvim" C-m                     # pane .1 (left) → editor
+  tmux split-window -h -l "$rcols" -t "${win}.1" -c "$dir"    # → pane .2 = right column
+
+  # Split the right column: top stays = cheatsheet, bottom (.3) = agent.
+  cheat_rows=48
+  claude_rows=$(( wh - cheat_rows )); (( claude_rows < 8 )) && claude_rows=$(( wh / 2 ))
+  tmux split-window -v -l "$claude_rows" -t "${win}.2" -c "$dir"
+
+  tmux send-keys -t "${win}.2" "~/.config/tmux/cheatsheet-pinned.sh" C-m  # top-right → pinned cheatsheet
+  tmux send-keys -t "${win}.3" "$agent" C-m                               # bottom-right → AI agent
+
+  tmux split-window -v -l 25% -t "${win}.1" -c "$dir"         # → pane .4 = shell under nvim
+  tmux select-pane -t "${win}.1"                             # focus the editor
+
+  # Remember this geometry so `prefix Space` can restore it later.
+  tmux set-option -w -t "$win" @ide_layout "$(tmux display -p -t "$win" '#{window_layout}')"
+}
+
+if [ -n "${TMUX:-}" ]; then
+  # Already inside tmux: build the layout in a fresh window.
+  win="$(tmux new-window -c "$dir" -P -F '#{session_name}:#{window_index}')"
+  build "$win"
+else
+  # Not in tmux: create a session named after the dir, build, then attach.
+  tmux new-session -d -s "$name" -c "$dir"
+  build "${name}:$(tmux display -p -t "$name" '#{window_index}')"
+  tmux attach -t "$name"
+fi
