@@ -54,7 +54,11 @@ if [ -n "${TMUX:-}" ]; then
   build "$win"
 else
   # Not in tmux: create a session named after the dir, build, then attach.
-  tmux new-session -d -s "$name" -c "$dir"
+  # Size the detached session to THIS terminal (tput), otherwise tmux defaults to
+  # 80x24 and build()'s geometry math collapses the right column into a 50/50 split
+  # that just scales up on attach — the editor never gets its wide column.
+  cols="$(tput cols 2>/dev/null || echo 80)"; rows="$(tput lines 2>/dev/null || echo 24)"
+  tmux new-session -d -s "$name" -c "$dir" -x "$cols" -y "$rows"
   build "${name}:$(tmux display -p -t "$name" '#{window_index}')"
   tmux attach -t "$name"
 fi
