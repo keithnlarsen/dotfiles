@@ -12,10 +12,10 @@ into tmux, nvim, and the agent/terminal panes.
 
 ## Ownership
 
-- `config/alacritty/` — GPU terminal: `alacritty.toml` + `themes/dracula-darker.toml`. Auto-launches tmux session `main`.
+- `config/alacritty/` — GPU terminal: `alacritty.toml` + `themes/dracula-darker.toml`. On launch runs `~/.local/bin/ide` (builds or reattaches the IDE), falling back to a plain `zsh` on detach.
 - `config/tmux/` — `tmux.conf` (prefix `Ctrl-a`, vi copy-mode), the 4-column cheatsheet generator `cheatsheet.sh`, and the pinned-pane variant `cheatsheet-pinned.sh` (re-renders on SIGWINCH).
 - `config/nvim/` — from-scratch Neovim: `init.lua`, `lua/config/{options,keymaps,lazy}.lua`, one file per concern in `lua/plugins/`. `lazy.nvim` is manager only. Leader = Space. `lazy-lock.json` pins plugin versions.
-- `local/bin/ide` — the IDE layout launcher (4-pane: nvim, shell, pinned cheatsheet, agent). Roots at `~/Development` by default; pass a dir to override.
+- `local/bin/ide` — the IDE layout launcher (5-pane: nvim, two shells, pinned cheatsheet, agent). Names the window `IDE (<focused pane's command>)` via a per-window `automatic-rename-format` (e.g. `IDE (nvim)`, `IDE (claude)`); reattaches if the session already exists. Roots at `~/Development` by default; pass a dir to override.
 - `zsh/ide.zsh` — PATH, `EDITOR`/`VISUAL=nvim`, aliases, fzf integration. Sourced from `~/.zshrc` (not symlinked — that file holds oh-my-zsh / p10k).
 - `install.sh` — idempotent symlinker (see Local Contracts). `README.md` — human setup notes.
 

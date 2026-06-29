@@ -79,6 +79,7 @@ prefix s :: pick session
 prefix $ :: rename session
 tmux a :: attach (shell)
 tmux ls :: list (shell)
+tmux kill-session :: close IDE (kill)
 
 § Scroll back & copy output
 prefix [ :: scroll / copy mode

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# ide — open the 4-pane IDE layout rooted at ~/Development (or a dir you pass).
+# ide — open the 5-pane IDE layout rooted at ~/Development (or a dir you pass).
 #
 #   ┌─────────────────────────┬──────────────────────┐
 #   │ nvim   (pane 1)         │ cheatsheet (pane 2)   │
 #   │                         ├──────────────────────┤
-#   ├─────────────────────────┤ agent / claude (.3)  │
-#   │ shell  (pane 4)         │                      │
-#   └─────────────────────────┴──────────────────────┘
+#   ├────────────┬────────────┤ agent / claude (.3)  │
+#   │ shell (.4) │ shell (.5) │                      │
+#   └────────────┴────────────┴──────────────────────┘
 #   (right column widened to fit the 4-column cheatsheet)
 #
 # Usage:   ide                 (root = ~/Development; resumes last Claude session, fresh if none)
@@ -42,7 +42,15 @@ build() {            # $1 = "session:window" target whose pane .1 is the start p
   tmux send-keys -t "${win}.3" "$agent" C-m                               # bottom-right → AI agent
 
   tmux split-window -v -l 25% -t "${win}.1" -c "$dir"         # → pane .4 = shell under nvim
+  tmux split-window -h -t "${win}.4" -c "$dir"               # → pane .5 = second shell beside .4
   tmux select-pane -t "${win}.1"                             # focus the editor
+
+  # Window name keeps the IDE identity but tracks the focused pane's command,
+  # e.g. "IDE (nvim)", "IDE (claude)", "IDE (zsh)". allow-rename off stops apps
+  # from clobbering it via title escape sequences.
+  tmux set-option -w -t "$win" allow-rename off
+  tmux set-option -w -t "$win" automatic-rename on
+  tmux set-option -w -t "$win" automatic-rename-format 'IDE (#{pane_current_command})'
 
   # Remember this geometry so `prefix Space` can restore it later.
   tmux set-option -w -t "$win" @ide_layout "$(tmux display -p -t "$win" '#{window_layout}')"
@@ -52,6 +60,10 @@ if [ -n "${TMUX:-}" ]; then
   # Already inside tmux: build the layout in a fresh window.
   win="$(tmux new-window -c "$dir" -P -F '#{session_name}:#{window_index}')"
   build "$win"
+elif tmux has-session -t "$name" 2>/dev/null; then
+  # IDE session already running (e.g. reopening Alacritty after detach/crash):
+  # just reattach — don't rebuild or stack a second window.
+  tmux attach -t "$name"
 else
   # Not in tmux: create a session named after the dir, build, then attach.
   # Size the detached session to THIS terminal (tput), otherwise tmux defaults to
