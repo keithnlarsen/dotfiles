@@ -80,43 +80,30 @@ prefix $ :: rename session
 tmux a :: attach (shell)
 tmux ls :: list (shell)
 
-§ Copy / scroll
-prefix [ :: copy / scroll mode
-/ or ? :: search fwd / back
+§ Scroll back & copy output
+prefix [ :: scroll / copy mode
+/ or ? :: search output
 v :: start selection
-y :: yank to clipboard
-q :: exit copy mode
+y :: copy to clipboard
+q :: exit scroll mode
 EOF
 )
 
 C2=$(cat <<'EOF'
-§ NVIM · leader = Space
+§ NVIM · edit · leader = Space
 § Survival
 :w :q :wq :: save / quit / both
 :q! :: quit window, discard
-:qa! :: quit ALL, discard changes
+:qa! :: quit ALL, discard
 :e! :: reload file, discard
-i a o :: insert / append / open line
+i a o :: insert / append / open
 Esc :: back to normal mode
 u / Ctrl-r :: undo / redo
 . :: repeat last change
-Ctrl-Z / fg :: suspend / resume nvim
+Ctrl-Z / fg :: suspend / resume
 Space (wait) :: which-key menu
 
-§ Select · copy · paste
-v :: highlight (char select)
-V :: highlight whole lines
-Ctrl-v :: block / column select
-ggVG :: select whole file
-y :: copy (yank) selection
-d / x :: cut / delete selection
-p / P :: paste after / before
-yy / dd :: copy / cut line
-yiw / ciw :: copy / change word
-> / < :: indent / outdent (visual)
-:%s/a/b/g :: find & replace all
-
-§ Move
+§ Move (cursor)
 h j k l :: left / down / up / right
 Nk / Nj :: up / down N lines (rel)
 w / b :: word fwd / back
@@ -125,58 +112,60 @@ gg / G :: top / bottom of file
 :N :: go to line N
 Ctrl-d / Ctrl-u :: half page dn / up
 % :: matching bracket
-/ or ? :: search fwd / back
-n / N :: next / prev match
-* :: search word under cursor
+Ctrl-o / Ctrl-i :: jump back / fwd
 
-§ Files & search
-Space e :: toggle file tree
-Space o :: focus file tree
-Space ff :: find files
-Space fg :: grep contents
-Space fb :: open buffers
-Space fr :: recent files
+§ Copy / paste
+v / V :: highlight char / lines
+Ctrl-v :: block / column select
+ggVG :: select whole file
+y :: copy (yank) selection
+d / x :: cut / delete selection
+p / P :: paste after / before
+yy / dd :: copy / cut line
+yiw / ciw :: copy / change word
+> / < :: indent / outdent (visual)
 EOF
 )
 
 C3=$(cat <<'EOF'
-§ NVIM · code & git
-§ LSP (intellisense)
-gd :: go to definition
-gr :: references
+§ NVIM · find · code · git
+§ Search
+/ or ? :: search in file
+n / N :: next / prev match
+* :: word under cursor
+:%s/a/b/g :: find & replace all
+Space ff :: find files (by name)
+Space fg :: grep in project
+Space fb :: open buffers
+Space fr :: recent files
+
+§ Code (LSP)
+gd / gr :: definition / references
 gI / gy :: implementation / type
 K :: hover docs
-Ctrl-o / Ctrl-i :: jump back / fwd
 Space ca :: code action
 Space rn :: rename symbol
 Space cf :: format file
 [d / ]d :: prev / next diagnostic
 Space xx :: list diagnostics
-Tab :: accept completion
-Ctrl-Space :: open completion
+Tab / Ctrl-Space :: complete / open
+
+§ Tree & splits
+Space e / o :: toggle / focus tree
+Ctrl-w h / l :: tree <-> editor
+Ctrl-w v / s :: vsplit / split
+Ctrl-w q :: close split
 
 § Git & diff
 Space gd :: diff (AI changes)
 Space gh :: file history
-Space gD :: close diff
 Space gg :: lazygit
 ]c / [c :: next / prev hunk
 Space hp :: preview hunk
 Space hs / hr :: stage / reset hunk
 Space hb :: blame line
 
-§ Splits (inside nvim)
-Ctrl-w v / s :: vsplit / split
-Ctrl-w h/j/k/l :: move
-Ctrl-w q :: close split
-Ctrl-w = :: equalize sizes
-
-§ Commands
-:Lazy :: plugin manager
-:Mason :: LSP installers
-:checkhealth :: diagnose setup
-
-§ Bottom-terminal
+§ Bottom terminal
 deno test --watch :: unit watch
 deno task dev :: dev server
 deno task lint :: eslint
