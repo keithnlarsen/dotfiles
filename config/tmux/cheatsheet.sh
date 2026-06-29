@@ -152,6 +152,7 @@ Tab / Ctrl-Space :: complete / open
 
 § Tree & splits
 Space e / o :: toggle / focus tree
+Space l :: jump to code editor
 Ctrl-w h / l :: tree <-> editor
 Ctrl-w v / s :: vsplit / split
 Ctrl-w q :: close split

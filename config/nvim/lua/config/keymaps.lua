@@ -8,6 +8,18 @@ map("n", "<leader>q", "<cmd>quit<cr>", { desc = "Quit window" })
 -- Clear search highlight with Esc
 map("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Clear search highlight" })
 
+-- Jump to the main code editor (first normal file window), e.g. from the tree
+map("n", "<leader>l", function()
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    local buf = vim.api.nvim_win_get_buf(win)
+    if vim.bo[buf].filetype ~= "neo-tree" and vim.bo[buf].buftype == "" then
+      vim.api.nvim_set_current_win(win)
+      return
+    end
+  end
+  vim.cmd("wincmd l") -- fallback: just move right
+end, { desc = "Go to code editor" })
+
 -- Move between splits with Ctrl+h/j/k/l (mirrors tmux's prefix h/j/k/l)
 map("n", "<C-h>", "<C-w>h", { desc = "Go to left split" })
 map("n", "<C-j>", "<C-w>j", { desc = "Go to lower split" })
