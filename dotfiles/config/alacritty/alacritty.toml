@@ -14,7 +14,7 @@ dynamic_padding = true
 decorations     = "full"        # try "buttonless" for a cleaner frameless look later
 opacity         = 0.98          # subtle; set 1.0 for fully solid
 option_as_alt   = "Both"        # makes the macOS Option key send Alt (useful in tmux/nvim)
-startup_mode    = "Windowed"
+startup_mode    = "Maximized"  # open full-size so `ide` builds at the real window size
 
 [font]
 size   = 16.0
