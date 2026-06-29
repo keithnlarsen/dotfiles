@@ -20,8 +20,8 @@ name="$(basename "$dir" | tr ' .' '__')"
 # Default: continue the most recent Claude conversation in this dir, else start fresh.
 agent="${AGENT_CMD:-claude --continue 2>/dev/null || claude}"
 
-build() {            # $1 = "session:window" target whose pane .1 is the start pane
-  local win="$1" wh ww rcols cheat_rows claude_rows
+build() {            # $1 = "session:window" target whose start pane becomes the editor
+  local win="$1" wh ww rcols cheat_rows claude_rows ed cs ag sh1
   wh=$(tmux display -p -t "$win" '#{window_height}')
   ww=$(tmux display -p -t "$win" '#{window_width}')
 
@@ -30,20 +30,25 @@ build() {            # $1 = "session:window" target whose pane .1 is the start p
   rcols=190
   (( ww - rcols < 80 )) && rcols=$(( ww / 2 ))
 
-  tmux send-keys -t "${win}.1" "nvim" C-m                     # pane .1 (left) → editor
-  tmux split-window -h -l "$rcols" -t "${win}.1" -c "$dir"    # → pane .2 = right column
+  # Target panes by their stable pane-id (%N), NOT positional index: tmux
+  # renumbers pane indices by position on every split, so ".4" stops meaning
+  # what it did one split earlier. Each split returns the new pane's id.
+  ed=$(tmux display -p -t "$win" '#{pane_id}')                            # start pane → editor
+  tmux send-keys -t "$ed" "nvim" C-m
 
-  # Split the right column: top stays = cheatsheet, bottom (.3) = agent.
+  cs=$(tmux split-window -h -l "$rcols" -t "$ed" -c "$dir" -PF '#{pane_id}')  # right column top → cheatsheet
+
+  # Split the right column: top stays = cheatsheet, bottom = agent.
   cheat_rows=48
   claude_rows=$(( wh - cheat_rows )); (( claude_rows < 8 )) && claude_rows=$(( wh / 2 ))
-  tmux split-window -v -l "$claude_rows" -t "${win}.2" -c "$dir"
+  ag=$(tmux split-window -v -l "$claude_rows" -t "$cs" -c "$dir" -PF '#{pane_id}')  # bottom-right → agent
 
-  tmux send-keys -t "${win}.2" "~/.config/tmux/cheatsheet-pinned.sh" C-m  # top-right → pinned cheatsheet
-  tmux send-keys -t "${win}.3" "$agent" C-m                               # bottom-right → AI agent
+  tmux send-keys -t "$cs" "~/.config/tmux/cheatsheet-pinned.sh" C-m       # pinned cheatsheet
+  tmux send-keys -t "$ag" "$agent" C-m                                    # AI agent
 
-  tmux split-window -v -l 25% -t "${win}.1" -c "$dir"         # → pane .4 = shell under nvim
-  tmux split-window -h -t "${win}.4" -c "$dir"               # → pane .5 = second shell beside .4
-  tmux select-pane -t "${win}.1"                             # focus the editor
+  sh1=$(tmux split-window -v -l 25% -t "$ed" -c "$dir" -PF '#{pane_id}')  # bottom-left → shell
+  tmux split-window -h -t "$sh1" -c "$dir"                                # second shell beside it
+  tmux select-pane -t "$ed"                                              # focus the editor
 
   # Window name keeps the IDE identity but tracks the focused pane's command,
   # e.g. "IDE (nvim)", "IDE (claude)", "IDE (zsh)". allow-rename off stops apps
@@ -65,12 +70,19 @@ elif tmux has-session -t "$name" 2>/dev/null; then
   # just reattach — don't rebuild or stack a second window.
   tmux attach -t "$name"
 else
-  # Not in tmux: create a session named after the dir, build, then attach.
-  # Size the detached session to THIS terminal (tput), otherwise tmux defaults to
-  # 80x24 and build()'s geometry math collapses the right column into a 50/50 split
-  # that just scales up on attach — the editor never gets its wide column.
-  cols="$(tput cols 2>/dev/null || echo 80)"; rows="$(tput lines 2>/dev/null || echo 24)"
-  tmux new-session -d -s "$name" -c "$dir" -x "$cols" -y "$rows"
-  build "${name}:$(tmux display -p -t "$name" '#{window_index}')"
+  # Not in tmux: create the session, then build the layout *after* a client
+  # attaches and the window reaches its real size. Building before attach is
+  # unreliable — when Alacritty launches us at startup the PTY still reports the
+  # default 80x24, so build()'s geometry collapses into a 50/50 split that just
+  # scales up. Polling tmux's own window_width (post-attach) is authoritative.
+  tmux new-session -d -s "$name" -c "$dir"
+  (
+    for _ in $(seq 1 100); do                       # wait up to ~5s for real size
+      ww=$(tmux display -p -t "$name" '#{window_width}' 2>/dev/null || echo 0)
+      (( ww > 100 )) && break
+      sleep 0.05
+    done
+    build "${name}:$(tmux display -p -t "$name" '#{window_index}')"
+  ) &
   tmux attach -t "$name"
 fi
