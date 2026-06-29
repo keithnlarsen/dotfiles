@@ -56,7 +56,7 @@ prefix : :: command prompt
 § Panes
 prefix | :: split right
 prefix - :: split below
-prefix h/j/k/l :: focus move
+prefix h/j/k/l :: focus move (+ arrows; into nvim splits)
 prefix H/J/K/L :: resize (hold)
 prefix z :: zoom toggle
 prefix x :: close pane
@@ -154,7 +154,7 @@ Tab / Ctrl-Space :: complete / open
 § Tree & splits
 Space e / o :: toggle / focus tree
 Space l :: jump to code editor
-Ctrl-w h / l :: tree <-> editor
+Ctrl-h/j/k/l :: move split (-> tmux pane at edge)
 Ctrl-w v / s :: vsplit / split
 Ctrl-w q :: close split
 
