@@ -1,7 +1,7 @@
 # dotfiles
 
 Lean terminal IDE — **Alacritty + tmux + Neovim** — with a Dracula "darker" theme,
-LSP/intellisense, a diff viewer, and a 4-pane `ide` layout (editor · shell · pinned
+LSP/intellisense, a diff viewer, and a 5-pane `ide` layout (editor · two shells · pinned
 cheatsheet · AI agent).
 
 ## Layout
@@ -10,7 +10,7 @@ cheatsheet · AI agent).
 config/alacritty/   → ~/.config/alacritty   GPU terminal, JetBrainsMono Nerd Font
 config/tmux/        → ~/.config/tmux         prefix Ctrl-a, statusbar, prefix ? cheatsheet
 config/nvim/        → ~/.config/nvim         hand-rolled (lazy.nvim as manager only)
-local/bin/ide       → ~/.local/bin/ide       the 4-pane IDE launcher
+local/bin/ide       → ~/.local/bin/ide       the 5-pane IDE launcher
 zsh/ide.zsh         → sourced from ~/.zshrc  PATH, EDITOR, aliases, fzf
 ```
 
