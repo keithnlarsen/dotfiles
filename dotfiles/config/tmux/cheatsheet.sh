@@ -45,9 +45,9 @@ cell() {
 C1=$(cat <<'EOF'
 § TMUX · prefix = Ctrl-a
 § Layout / workflow
-dev :: IDE (resumes Claude)
-AGENT_CMD=claude dev :: fresh Claude
-AGENT_CMD=opencode dev :: opencode
+ide :: IDE (resumes Claude)
+AGENT_CMD=claude ide :: fresh Claude
+AGENT_CMD=opencode ide :: opencode
 prefix ? :: this cheatsheet
 prefix Space :: restore IDE layout
 prefix r :: reload tmux config

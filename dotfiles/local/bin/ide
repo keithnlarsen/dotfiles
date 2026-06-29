@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# dev — open the 4-pane IDE layout for the current project directory.
+# ide — open the 4-pane IDE layout rooted at ~/Development (or a dir you pass).
 #
 #   ┌─────────────────────────┬──────────────────────┐
 #   │ nvim   (pane 1)         │ cheatsheet (pane 2)   │
@@ -9,12 +9,13 @@
 #   └─────────────────────────┴──────────────────────┘
 #   (right column widened to fit the 4-column cheatsheet)
 #
-# Usage:   dev                 (resumes the last Claude session here; fresh if none)
-#          AGENT_CMD=claude dev          (always a fresh Claude session)
-#          AGENT_CMD=opencode dev        (use opencode instead)
+# Usage:   ide                 (root = ~/Development; resumes last Claude session, fresh if none)
+#          ide <dir>           (root the IDE at <dir> instead)
+#          AGENT_CMD=claude ide          (always a fresh Claude session)
+#          AGENT_CMD=opencode ide        (use opencode instead)
 set -euo pipefail
 
-dir="$PWD"
+dir="${1:-$HOME/Development}"
 name="$(basename "$dir" | tr ' .' '__')"
 # Default: continue the most recent Claude conversation in this dir, else start fresh.
 agent="${AGENT_CMD:-claude --continue 2>/dev/null || claude}"

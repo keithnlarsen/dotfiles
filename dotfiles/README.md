@@ -1,7 +1,7 @@
 # dotfiles
 
 Lean terminal IDE — **Alacritty + tmux + Neovim** — with a Dracula "darker" theme,
-LSP/intellisense, a diff viewer, and a 4-pane `dev` layout (editor · shell · pinned
+LSP/intellisense, a diff viewer, and a 4-pane `ide` layout (editor · shell · pinned
 cheatsheet · AI agent).
 
 ## Layout
@@ -10,18 +10,21 @@ cheatsheet · AI agent).
 config/alacritty/   → ~/.config/alacritty   GPU terminal, JetBrainsMono Nerd Font
 config/tmux/        → ~/.config/tmux         prefix Ctrl-a, statusbar, prefix ? cheatsheet
 config/nvim/        → ~/.config/nvim         hand-rolled (lazy.nvim as manager only)
-local/bin/dev       → ~/.local/bin/dev       the 4-pane IDE launcher
-zsh/piidesk-ide.zsh → sourced from ~/.zshrc  PATH, EDITOR, aliases, fzf
+local/bin/ide       → ~/.local/bin/ide       the 4-pane IDE launcher
+zsh/ide.zsh         → sourced from ~/.zshrc  PATH, EDITOR, aliases, fzf
 ```
 
-The repo mirrors the home layout, so `~/.config/nvim` is a symlink to
-`~/.dotfiles/config/nvim`. Edit files in either place — they're the same inode.
+`install.sh` symlinks these into place, so `~/.config/nvim` is a symlink to
+`~/Development/dotfiles/config/nvim`. Edit files in either place — they're the same inode.
 
 ## Install (this or a new machine)
 
+This repo's root is `~/Development` (it also hosts sibling project repos, which are
+`.gitignore`d). Clone it there, then run the installer:
+
 ```sh
-git clone <repo-url> ~/.dotfiles
-~/.dotfiles/install.sh
+git clone <repo-url> ~/Development
+~/Development/dotfiles/install.sh
 ```
 
 `install.sh` is idempotent: correct links are left alone, and anything it would
@@ -40,5 +43,5 @@ installed with `:Mason`.
 ## Keys
 
 `prefix` = `Ctrl-a`, leader = `Space`. Full reference: **`prefix ?`** (tmux popup),
-or the pinned top-right pane in the `dev` layout. In nvim, press `Space` and wait for
+or the pinned top-right pane in the `ide` layout. In nvim, press `Space` and wait for
 the which-key menu.

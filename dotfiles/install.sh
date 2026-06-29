@@ -4,11 +4,11 @@
 # Idempotent and safe: re-running does nothing if links are already correct,
 # and anything it would overwrite is moved to a timestamped backup first.
 #
-#   ~/.dotfiles/config/alacritty  ->  ~/.config/alacritty
-#   ~/.dotfiles/config/tmux       ->  ~/.config/tmux
-#   ~/.dotfiles/config/nvim       ->  ~/.config/nvim
-#   ~/.dotfiles/local/bin/dev     ->  ~/.local/bin/dev
-#   ~/.zshrc  gets a `source` line for  ~/.dotfiles/zsh/piidesk-ide.zsh
+#   ~/Development/dotfiles/config/alacritty  ->  ~/.config/alacritty
+#   ~/Development/dotfiles/config/tmux       ->  ~/.config/tmux
+#   ~/Development/dotfiles/config/nvim       ->  ~/.config/nvim
+#   ~/Development/dotfiles/local/bin/ide     ->  ~/.local/bin/ide
+#   ~/.zshrc  gets a `source` line for  ~/Development/dotfiles/zsh/ide.zsh
 set -euo pipefail
 
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -33,18 +33,18 @@ link() {            # link <repo-relative-source> <absolute-target>
 link config/alacritty "$HOME/.config/alacritty"
 link config/tmux      "$HOME/.config/tmux"
 link config/nvim      "$HOME/.config/nvim"
-link local/bin/dev    "$HOME/.local/bin/dev"
+link local/bin/ide    "$HOME/.local/bin/ide"
 
 # zsh: source our block from ~/.zshrc (don't symlink the whole file — it holds
 # oh-my-zsh / p10k / machine-specific lines we don't manage here).
-if ! grep -qF 'dotfiles/zsh/piidesk-ide.zsh' "$HOME/.zshrc" 2>/dev/null; then
+if ! grep -qF 'Development/dotfiles/zsh/ide.zsh' "$HOME/.zshrc" 2>/dev/null; then
   {
-    printf '\n# piidesk dev environment (managed by ~/.dotfiles)\n'
-    printf '[ -f "$HOME/.dotfiles/zsh/piidesk-ide.zsh" ] && source "$HOME/.dotfiles/zsh/piidesk-ide.zsh"\n'
+    printf '\n# terminal IDE environment (managed by ~/Development/dotfiles)\n'
+    printf '[ -f "$HOME/Development/dotfiles/zsh/ide.zsh" ] && source "$HOME/Development/dotfiles/zsh/ide.zsh"\n'
   } >> "$HOME/.zshrc"
   echo "zshrc   appended source line"
 else
-  echo "ok      ~/.zshrc already sources piidesk-ide.zsh"
+  echo "ok      ~/.zshrc already sources ide.zsh"
 fi
 
 echo

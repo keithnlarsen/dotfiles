@@ -1,6 +1,6 @@
 # ── Dev environment: tmux + nvim + alacritty ───────────────────────────────
-# Sourced from ~/.zshrc.  Managed by ~/.dotfiles (run install.sh to (re)link).
-export PATH="$HOME/.local/bin:$PATH"   # for the `dev` layout launcher
+# Sourced from ~/.zshrc.  Managed by ~/Development/dotfiles (run install.sh to (re)link).
+export PATH="$HOME/.local/bin:$PATH"   # for the `ide` layout launcher
 export EDITOR="nvim"
 export VISUAL="nvim"
 alias v="nvim"

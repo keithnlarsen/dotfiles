@@ -30,7 +30,7 @@ history = 10000
 
 # Auto-attach (or create) tmux on launch. When you detach (Ctrl-a d) or exit
 # tmux, `exec zsh -l` drops you into a plain shell instead of closing the window.
-# Re-enter the IDE with  tmux a  (attach) or  dev.
+# Re-enter the IDE with  tmux a  (attach) or  ide.
 [terminal.shell]
 program = "/bin/zsh"
 args    = ["-l", "-c", "tmux new-session -A -s main; exec zsh -l"]
