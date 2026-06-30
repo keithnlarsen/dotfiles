@@ -24,9 +24,11 @@ markov/       sibling project — own git repo, .gitignore'd
 
 ## The terminal IDE
 
-One command, `ide`, builds a 5-pane tmux layout — editor · two shells · pinned cheatsheet ·
-AI agent — themed with Dracula "darker", with LSP/intellisense and a git diff viewer in
-Neovim. `prefix` = `Ctrl-a`, leader = `Space`; press **`prefix ?`** for the full keybinding
+One command, `ide`, builds a tmux layout — themed with Dracula "darker", with
+LSP/intellisense and a git diff viewer in Neovim. Two sizes: `ide large` (default, 5-pane:
+editor · two shells · pinned cheatsheet · AI agent) for the 5K monitor, and `ide small`
+(4-pane: editor · one shell · full-height AI agent, no pinned cheatsheet) for the laptop.
+`prefix` = `Ctrl-a`, leader = `Space`; press **`prefix ?`** for the full keybinding
 cheatsheet. Alacritty opens maximized and launches straight into `ide`.
 
 See [`dotfiles/README.md`](dotfiles/README.md) for the layout map, keybindings, and dependencies.

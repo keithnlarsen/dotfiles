@@ -1,34 +1,48 @@
 #!/usr/bin/env bash
-# ide — open the 5-pane IDE layout rooted at ~/Development (or a dir you pass).
+# ide — open an IDE tmux layout rooted at ~/Development (or a dir you pass).
 #
-#   ┌─────────────────────────┬──────────────────────┐
-#   │ nvim   (pane 1)         │ cheatsheet (pane 2)   │
-#   │                         ├──────────────────────┤
-#   ├────────────┬────────────┤ agent / claude (.3)  │
-#   │ shell (.4) │ shell (.5) │                      │
-#   └────────────┴────────────┴──────────────────────┘
-#   (right column widened to fit the 4-column cheatsheet)
+# Two layouts, picked by size:
 #
-# Usage:   ide                 (root = ~/Development; resumes last Claude session, fresh if none)
-#          ide <dir>           (root the IDE at <dir> instead)
+#   large  (5K 45" monitor — the default)        small  (laptop monitor)
+#   ┌────────────┬──────────────────────┐        ┌─────────────────┬──────────────┐
+#   │ nvim       │ cheatsheet           │        │ nvim            │ agent/claude │
+#   │            ├──────────────────────┤        │                 │ (right col,  │
+#   ├─────┬──────┤ agent / claude       │        ├─────────────────┤  full height)│
+#   │ sh  │ sh   │                      │        │ shell           │              │
+#   └─────┴──────┴──────────────────────┘        └─────────────────┴──────────────┘
+#   right col widened for the 4-col cheatsheet    no pinned cheatsheet (popup only),
+#                                                 one shell instead of two
+#
+# The cheatsheet is always available as a floating popup via  prefix ?  ; the
+# `small` layout drops the *pinned* cheatsheet pane to reclaim the space.
+#
+# Usage:   ide                 (large, root = ~/Development; resumes last Claude session)
+#          ide large           (large layout explicitly)
+#          ide small           (small/laptop layout)
+#          ide small <dir>     (small layout rooted at <dir>)
+#          ide <dir>           (large layout rooted at <dir>)
 #          AGENT_CMD=claude ide          (always a fresh Claude session)
 #          AGENT_CMD=opencode ide        (use opencode instead)
 set -euo pipefail
 
+# First arg may be the layout size; anything else is the root dir.
+layout="large"
+case "${1:-}" in
+  small|large) layout="$1"; shift ;;
+esac
+
 dir="${1:-$HOME/Development}"
 name="$(basename "$dir" | tr ' .' '__')"
+# Small runs as its own session so it can coexist with (and not reattach into)
+# the large layout for the same dir. Large keeps the bare name.
+[ "$layout" = small ] && name="${name}-small"
 # Default: continue the most recent Claude conversation in this dir, else start fresh.
 agent="${AGENT_CMD:-claude --continue 2>/dev/null || claude}"
 
-build() {            # $1 = "session:window" target whose start pane becomes the editor
-  local win="$1" wh ww rcols cheat_rows claude_rows ed cs ag sh1
+build() {            # $1 = "session:window" target whose start pane becomes the editor; $2 = layout
+  local win="$1" layout="$2" wh ww rcols cheat_rows claude_rows ed cs ag sh1
   wh=$(tmux display -p -t "$win" '#{window_height}')
   ww=$(tmux display -p -t "$win" '#{window_width}')
-
-  # Right column wide enough for the 4-column cheatsheet (~185 cols + margin),
-  # but never starve the editor — fall back to half-width on a narrow screen.
-  rcols=190
-  (( ww - rcols < 80 )) && rcols=$(( ww / 2 ))
 
   # Target panes by their stable pane-id (%N), NOT positional index: tmux
   # renumbers pane indices by position on every split, so ".4" stops meaning
@@ -36,19 +50,35 @@ build() {            # $1 = "session:window" target whose start pane becomes the
   ed=$(tmux display -p -t "$win" '#{pane_id}')                            # start pane → editor
   tmux send-keys -t "$ed" "nvim" C-m
 
-  cs=$(tmux split-window -h -l "$rcols" -t "$ed" -c "$dir" -PF '#{pane_id}')  # right column top → cheatsheet
+  if [ "$layout" = small ]; then
+    # Laptop: nvim (left), agent (full-height right column), one shell (bottom-left).
+    # No pinned cheatsheet — reach it via the  prefix ?  popup. Half-width right
+    # column since there's no 4-column cheatsheet to fit.
+    rcols=$(( ww / 2 ))
+    ag=$(tmux split-window -h -l "$rcols" -t "$ed" -c "$dir" -PF '#{pane_id}') # right column → agent
+    tmux send-keys -t "$ag" "$agent" C-m                                   # AI agent
+    tmux split-window -v -l 25% -t "$ed" -c "$dir"                         # bottom-left → shell
+    tmux select-pane -t "$ed"                                             # focus the editor
+  else
+    # Large (5K): nvim (left), pinned cheatsheet (top-right), agent (bottom-right),
+    # two shells (bottom-left). Right column wide enough for the 4-column cheatsheet
+    # (~185 cols + margin), but never starve the editor — fall back to half-width.
+    rcols=190
+    (( ww - rcols < 80 )) && rcols=$(( ww / 2 ))
+    cs=$(tmux split-window -h -l "$rcols" -t "$ed" -c "$dir" -PF '#{pane_id}') # right column top → cheatsheet
 
-  # Split the right column: top stays = cheatsheet, bottom = agent.
-  cheat_rows=48
-  claude_rows=$(( wh - cheat_rows )); (( claude_rows < 8 )) && claude_rows=$(( wh / 2 ))
-  ag=$(tmux split-window -v -l "$claude_rows" -t "$cs" -c "$dir" -PF '#{pane_id}')  # bottom-right → agent
+    # Split the right column: top stays = cheatsheet, bottom = agent.
+    cheat_rows=48
+    claude_rows=$(( wh - cheat_rows )); (( claude_rows < 8 )) && claude_rows=$(( wh / 2 ))
+    ag=$(tmux split-window -v -l "$claude_rows" -t "$cs" -c "$dir" -PF '#{pane_id}') # bottom-right → agent
 
-  tmux send-keys -t "$cs" "~/.config/tmux/cheatsheet-pinned.sh" C-m       # pinned cheatsheet
-  tmux send-keys -t "$ag" "$agent" C-m                                    # AI agent
+    tmux send-keys -t "$cs" "~/.config/tmux/cheatsheet-pinned.sh" C-m     # pinned cheatsheet
+    tmux send-keys -t "$ag" "$agent" C-m                                  # AI agent
 
-  sh1=$(tmux split-window -v -l 25% -t "$ed" -c "$dir" -PF '#{pane_id}')  # bottom-left → shell
-  tmux split-window -h -t "$sh1" -c "$dir"                                # second shell beside it
-  tmux select-pane -t "$ed"                                              # focus the editor
+    sh1=$(tmux split-window -v -l 25% -t "$ed" -c "$dir" -PF '#{pane_id}') # bottom-left → shell
+    tmux split-window -h -t "$sh1" -c "$dir"                              # second shell beside it
+    tmux select-pane -t "$ed"                                            # focus the editor
+  fi
 
   # Window name keeps the IDE identity but tracks the focused pane's command,
   # e.g. "IDE (nvim)", "IDE (claude)", "IDE (zsh)". allow-rename off stops apps
@@ -64,7 +94,7 @@ build() {            # $1 = "session:window" target whose start pane becomes the
 if [ -n "${TMUX:-}" ]; then
   # Already inside tmux: build the layout in a fresh window.
   win="$(tmux new-window -c "$dir" -P -F '#{session_name}:#{window_index}')"
-  build "$win"
+  build "$win" "$layout"
 elif tmux has-session -t "$name" 2>/dev/null; then
   # IDE session already running (e.g. reopening Alacritty after detach/crash):
   # just reattach — don't rebuild or stack a second window.
@@ -82,7 +112,7 @@ else
       (( ww > 100 )) && break
       sleep 0.05
     done
-    build "${name}:$(tmux display -p -t "$name" '#{window_index}')"
+    build "${name}:$(tmux display -p -t "$name" '#{window_index}')" "$layout"
   ) &
   tmux attach -t "$name"
 fi
