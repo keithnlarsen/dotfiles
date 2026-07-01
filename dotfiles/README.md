@@ -14,7 +14,7 @@ config/nvim/        → ~/.config/nvim         hand-rolled (lazy.nvim as manager
 config/git/         → ~/.config/git          global gitignore (XDG)
 config/starship.toml → ~/.config/starship.toml  Starship prompt config
 local/bin/ide       → ~/.local/bin/ide       IDE launcher (ide [small|large] [dir])
-zsh/zshrc.zsh       → sourced from ~/.zshrc  oh-my-zsh (no theme), sources ide.zsh + starship
+zsh/zshrc.zsh       → sourced from ~/.zshrc  framework-free rc, sources ide.zsh + starship
 zsh/ide.zsh         → sourced by zshrc.zsh   PATH, EDITOR, aliases, fzf
 zsh/zprofile        → ~/.zprofile            brew shellenv
 git/gitconfig       → ~/.gitconfig           user + gh credential helper

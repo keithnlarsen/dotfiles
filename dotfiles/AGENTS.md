@@ -18,7 +18,7 @@ into tmux, nvim, and the agent/terminal panes.
 - `config/git/` — XDG git dir: global `ignore` (`~/.config/git`).
 - `config/starship.toml` — Starship prompt config (`~/.config/starship.toml`). Starship is the prompt engine (replaced Powerlevel10k); it's a brew binary, not an oh-my-zsh theme.
 - `local/bin/ide` — the IDE layout launcher. Two layouts picked by first arg: `large` (default, 5K 45" monitor — 5-pane: nvim, two shells, pinned cheatsheet, agent) and `small` (laptop — 4-pane: nvim, one shell, full-height agent column, no pinned cheatsheet — reach it via the `prefix ?` popup). `small` runs as its own `<dir>-small` session so it coexists with `large`. Usage: `ide [small|large] [dir]` (bare `ide` = `large` at `~/Development`). Names the window `IDE (<focused pane's command>)` via a per-window `automatic-rename-format` (e.g. `IDE (nvim)`, `IDE (claude)`); reattaches if the session already exists.
-- `zsh/` — shell config. `zshrc.zsh` (managed rc: oh-my-zsh with theme disabled, sources ide.zsh, then `starship init zsh`) is sourced by the thin `~/.zshrc` bootstrap. `ide.zsh` (PATH, `EDITOR`/`VISUAL=nvim`, aliases, fzf) is sourced by `zshrc.zsh`. `zprofile` → `~/.zprofile`.
+- `zsh/` — shell config. `zshrc.zsh` (managed rc: framework-free — native `compinit` + history/setopt blocks, sources ide.zsh, then `starship init zsh`) is sourced by the thin `~/.zshrc` bootstrap. `ide.zsh` (PATH, `EDITOR`/`VISUAL=nvim`, aliases, fzf) is sourced by `zshrc.zsh`. `zprofile` → `~/.zprofile`.
 - `git/gitconfig` → `~/.gitconfig` — home-level git config (user, credential helper via `gh`; no tokens).
 - `install.sh` — idempotent symlinker (see Local Contracts). `README.md` — human setup notes.
 
@@ -33,6 +33,7 @@ into tmux, nvim, and the agent/terminal panes.
 ## Work Guidance
 
 - Keep the Dracula palette the single point of color truth — don't hardcode colors per-tool when they can inherit from Ghostty's 16-color set (`config/ghostty/themes/dracula-darker`).
+- **No GitHub issues for dotfiles work.** The root DOX's "issue before large tasks" preference does not apply here — just do the work and commit. Push directly to `main` when Keith asks.
 
 ## Verification
 
