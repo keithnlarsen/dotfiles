@@ -32,3 +32,12 @@ opt.confirm = true           -- ask to save instead of failing :q
 
 opt.list = true
 opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" } -- show hidden whitespace
+
+-- Synchronized output (mode-2026): Neovim batches each frame between BEGIN/END
+-- markers so terminals paint it atomically (no tearing). Ghostty handles this
+-- natively, but tmux 3.7a's emulation buffers the frame and doesn't flush to the
+-- outer terminal until a full redraw — so nvim looks frozen and only repaints when
+-- you switch panes. Turn it off *only inside tmux*; keep it on in a bare terminal.
+if vim.env.TMUX then
+  opt.termsync = false
+end

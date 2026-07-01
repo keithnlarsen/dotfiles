@@ -4,3 +4,4 @@
 # Sibling project repos — their own git repos, not part of dotfiles
 /piidesk/
 /markov/
+/simple_backtest/

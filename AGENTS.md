@@ -11,7 +11,7 @@ repos (`piidesk/`, `markov/`) are `.gitignore`d so they stay independent.
 
 ## Dev environment context
 
-- **Terminal IDE.** Keith works in a hand-rolled **Alacritty + tmux + Neovim** IDE (replaced
+- **Terminal IDE.** Keith works in a hand-rolled **Ghostty + tmux + Neovim** IDE (replaced
   VS Code; lean, not a distro), launched by the `ide` command (roots at `~/Development`). Leader = Space, tmux prefix =
   `Ctrl-a`, `prefix ?` opens a cheatsheet popup. Configs live in the **`dotfiles/`** project here
   (see the Child DOX Index and `dotfiles/AGENTS.md`).
@@ -114,5 +114,6 @@ specific to one project goes in that project's AGENTS.md.
 | Path | Scope |
 |------|-------|
 | `piidesk/AGENTS.md` | **The piidesk app** (Deno/Hono + Vite React portfolio tool). Owns its full `src/`, `devops/`, `e2e/` subtree, its toolchain rules, and its own domain glossary (`CONTEXT.md`). |
-| `dotfiles/AGENTS.md` | **Terminal-IDE config project** (Alacritty / tmux / nvim, the `ide` launcher, `zsh/ide.zsh`). Real files here; `install.sh` symlinks them into `~/.config/*` and `~/.local/bin/ide`. Tracked by this repo (the `.git` at `~/Development`). Public on GitHub (`keithnlarsen/dotfiles`) — secret-scan before pushing. |
+| `dotfiles/AGENTS.md` | **Terminal-IDE + shell config project** (Ghostty / tmux / nvim, the `ide` launcher, zsh + Starship prompt, git config). Real files here; `install.sh` symlinks them into `~/.config/*`, `~/.local/bin/ide`, and home-level dotfiles (`~/.zprofile`, `~/.gitconfig`); `~/.zshrc` stays a thin bootstrap sourcing `zsh/zshrc.zsh`. Tracked by this repo (the `.git` at `~/Development`). Public on GitHub (`keithnlarsen/dotfiles`) — secret-scan before pushing; credential/state files stay unmanaged. |
 | `markov/` | Separate project, its own git repo (`.gitignore`d here); no DOX doc yet. |
+| `simple_backtest/` | Standalone TQQQ EMA-cross backtest (pure-stdlib Python). `.gitignore`d here; not part of dotfiles. Has its own `README.md`; no DOX doc. |

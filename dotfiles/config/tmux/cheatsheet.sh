@@ -157,6 +157,8 @@ Space l :: jump to code editor
 Ctrl-h/j/k/l :: move split (-> tmux pane at edge)
 Ctrl-w v / s :: vsplit / split
 Ctrl-w q :: close split
+Space bd :: close buffer (keep nvim)
+Space bn / bp :: next / prev buffer
 
 § Git & diff
 Space gd :: diff (AI changes)

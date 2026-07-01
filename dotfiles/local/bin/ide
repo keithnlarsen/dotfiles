@@ -16,7 +16,7 @@
 # The cheatsheet is always available as a floating popup via  prefix ?  ; the
 # `small` layout drops the *pinned* cheatsheet pane to reclaim the space.
 #
-# Usage:   ide                 (large, root = ~/Development; resumes last Claude session)
+# Usage:   ide                 (large, root = ~/Development; opens the Claude session picker)
 #          ide large           (large layout explicitly)
 #          ide small           (small/laptop layout)
 #          ide small <dir>     (small layout rooted at <dir>)
@@ -36,8 +36,8 @@ name="$(basename "$dir" | tr ' .' '__')"
 # Small runs as its own session so it can coexist with (and not reattach into)
 # the large layout for the same dir. Large keeps the bare name.
 [ "$layout" = small ] && name="${name}-small"
-# Default: continue the most recent Claude conversation in this dir, else start fresh.
-agent="${AGENT_CMD:-claude --continue 2>/dev/null || claude}"
+# Default: open the Claude session picker (--resume); start fresh if there are none.
+agent="${AGENT_CMD:-claude --resume 2>/dev/null || claude}"
 
 build() {            # $1 = "session:window" target whose start pane becomes the editor; $2 = layout
   local win="$1" layout="$2" wh ww rcols cheat_rows claude_rows ed cs ag sh1
@@ -77,6 +77,7 @@ build() {            # $1 = "session:window" target whose start pane becomes the
 
     sh1=$(tmux split-window -v -l 25% -t "$ed" -c "$dir" -PF '#{pane_id}') # bottom-left → shell
     tmux split-window -h -t "$sh1" -c "$dir"                              # second shell beside it
+    tmux send-keys -t "$sh1" C-l                                         # redraw sh1: it was resized after its shell drew, leaving the prompt a line low
     tmux select-pane -t "$ed"                                            # focus the editor
   fi
 
@@ -96,13 +97,13 @@ if [ -n "${TMUX:-}" ]; then
   win="$(tmux new-window -c "$dir" -P -F '#{session_name}:#{window_index}')"
   build "$win" "$layout"
 elif tmux has-session -t "$name" 2>/dev/null; then
-  # IDE session already running (e.g. reopening Alacritty after detach/crash):
+  # IDE session already running (e.g. reopening Ghostty after detach/crash):
   # just reattach — don't rebuild or stack a second window.
   tmux attach -t "$name"
 else
   # Not in tmux: create the session, then build the layout *after* a client
   # attaches and the window reaches its real size. Building before attach is
-  # unreliable — when Alacritty launches us at startup the PTY still reports the
+  # unreliable — when Ghostty launches us at startup the PTY still reports the
   # default 80x24, so build()'s geometry collapses into a 50/50 split that just
   # scales up. Polling tmux's own window_width (post-attach) is authoritative.
   tmux new-session -d -s "$name" -c "$dir"

@@ -1,6 +1,6 @@
 # dotfiles
 
-Lean terminal IDE — **Alacritty + tmux + Neovim** — with a Dracula "darker" theme,
+Lean terminal IDE — **Ghostty + tmux + Neovim** — with a Dracula "darker" theme,
 LSP/intellisense, a diff viewer, and a two-size `ide` layout — `large` (5-pane: editor · two
 shells · pinned cheatsheet · AI agent) for the 5K monitor, `small` (4-pane: editor · one
 shell · full-height AI agent, no pinned cheatsheet) for the laptop.
@@ -8,15 +8,24 @@ shell · full-height AI agent, no pinned cheatsheet) for the laptop.
 ## Layout
 
 ```
-config/alacritty/   → ~/.config/alacritty   GPU terminal, JetBrainsMono Nerd Font
+config/ghostty/     → ~/.config/ghostty      GPU terminal, JetBrainsMono Nerd Font, launches ide
 config/tmux/        → ~/.config/tmux         prefix Ctrl-a, statusbar, prefix ? cheatsheet
 config/nvim/        → ~/.config/nvim         hand-rolled (lazy.nvim as manager only)
+config/git/         → ~/.config/git          global gitignore (XDG)
+config/starship.toml → ~/.config/starship.toml  Starship prompt config
 local/bin/ide       → ~/.local/bin/ide       IDE launcher (ide [small|large] [dir])
-zsh/ide.zsh         → sourced from ~/.zshrc  PATH, EDITOR, aliases, fzf
+zsh/zshrc.zsh       → sourced from ~/.zshrc  oh-my-zsh (no theme), sources ide.zsh + starship
+zsh/ide.zsh         → sourced by zshrc.zsh   PATH, EDITOR, aliases, fzf
+zsh/zprofile        → ~/.zprofile            brew shellenv
+git/gitconfig       → ~/.gitconfig           user + gh credential helper
 ```
 
 `install.sh` symlinks these into place, so `~/.config/nvim` is a symlink to
 `~/Development/dotfiles/config/nvim`. Edit files in either place — they're the same inode.
+
+`~/.zshrc` is the one exception — it stays a thin, un-symlinked bootstrap that keeps
+machine-specific lines (custom PATH exports) and sources `zsh/zshrc.zsh`. Secrets and
+machine state (`.git-credentials`, `~/.config/{gh,gcloud}`, history) are never managed here.
 
 ## Install (this or a new machine)
 
@@ -34,8 +43,8 @@ overwrite is moved to `~/.dotfiles-backup/<timestamp>/` first.
 ### Dependencies
 
 ```sh
-brew install alacritty tmux neovim fzf fd ripgrep lazygit bat
-brew install --cask font-jetbrains-mono-nerd-font
+brew install tmux neovim fzf fd ripgrep lazygit bat starship
+brew install --cask ghostty font-jetbrains-mono-nerd-font
 ```
 
 Neovim bootstraps its own plugins via `lazy.nvim` on first launch; LSP servers are

@@ -1,0 +1,20 @@
+# Ghostty — the GPU canvas for the terminal IDE (replaced Alacritty; it renders
+# Nerd Font powerline glyphs cleanly where Alacritty left seams). No tabs — tmux
+# does the multiplexing. Config reloads live (Cmd+Shift+,).
+
+font-family = "JetBrainsMono Nerd Font Mono"
+font-size = 16
+
+# Dracula "darker" — the IDE's single color source (themes/dracula-darker).
+theme = dracula-darker
+
+window-padding-x = 10
+window-padding-y = 8
+background-opacity = 0.98
+macos-option-as-alt = true
+maximize = true
+
+# Launch straight into the IDE (mirrors the old Alacritty shell setup): a login
+# shell runs the `ide` launcher, then drops to a plain login shell on detach, so
+# there's never a stray bare-shell window. Re-enter with `ide` or `tmux a`.
+command = /bin/zsh -l -c "~/.local/bin/ide; exec zsh -l"

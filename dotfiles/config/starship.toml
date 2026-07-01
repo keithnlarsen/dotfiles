@@ -1,0 +1,104 @@
+# Starship prompt — managed by ~/Development/dotfiles.
+# Powerline style, colored from the Dracula "darker" palette
+# (config/ghostty/themes/dracula-darker — the IDE's single color source).
+# Separators/icons are Nerd Font glyphs (U+E0B4 etc.); needs a Nerd Font.
+# NOTE: regenerate via /tmp/gen_starship.py — editors here strip the PUA glyphs.
+# Docs: https://starship.rs/config/   Presets: https://starship.rs/presets/
+
+"$schema" = 'https://starship.rs/config-schema.json'
+
+add_newline = true
+palette = "dracula"
+
+format = """
+$os\
+$username\
+[](fg:purple bg:gray)\
+$directory\
+[](fg:gray bg:green)\
+$git_branch\
+$git_status\
+[](fg:green)\
+$line_break\
+$character"""
+
+right_format = """
+$nodejs$python$golang$rust\
+$cmd_duration\
+[](fg:comment)$time"""
+
+[palettes.dracula]
+fg      = "#f8f8f2"
+bg      = "#1d1e26"
+black   = "#21222c"
+gray    = "#44475a"
+comment = "#6272a4"
+red     = "#ff5555"
+green   = "#50fa7b"
+yellow  = "#f1fa8c"
+purple  = "#bd93f9"
+pink    = "#ff79c6"
+cyan    = "#8be9fd"
+
+[os]
+disabled = false
+style = "fg:black bg:purple"
+format = "[ $symbol ]($style)"
+
+[os.symbols]
+Macos = ""
+
+[username]
+show_always = true
+style_user = "fg:black bg:purple"
+style_root = "fg:red bg:purple"
+format = "[$user ]($style)"
+
+[directory]
+style = "fg:fg bg:gray"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncate_to_repo = true
+read_only = " "
+
+[git_branch]
+symbol = " "
+style = "fg:black bg:green"
+format = "[ $symbol$branch ]($style)"
+
+[git_status]
+style = "fg:black bg:green"
+format = "[$all_status$ahead_behind ]($style)"
+
+[cmd_duration]
+min_time = 2000
+style = "fg:yellow"
+format = "[  took $duration ]($style)"
+
+[time]
+disabled = false
+style = "fg:fg bg:comment"
+format = "[  $time ]($style)"
+time_format = "%H:%M"
+
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+vimcmd_symbol = "[❮](bold green)"
+
+[nodejs]
+symbol = " "
+style = "fg:green"
+format = "[ $symbol($version) ]($style)"
+[python]
+symbol = " "
+style = "fg:yellow"
+format = "[ $symbol($version) ]($style)"
+[golang]
+symbol = " "
+style = "fg:cyan"
+format = "[ $symbol($version) ]($style)"
+[rust]
+symbol = " "
+style = "fg:red"
+format = "[ $symbol($version) ]($style)"

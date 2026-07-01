@@ -1,4 +1,4 @@
--- Dracula (darker background to match Alacritty's #1d1e26).
+-- Dracula (darker background to match Ghostty's #1d1e26).
 return {
   "Mofiqul/dracula.nvim",
   lazy = false,

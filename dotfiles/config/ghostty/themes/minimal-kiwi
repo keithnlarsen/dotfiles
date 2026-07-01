@@ -1,0 +1,54 @@
+# Minimal Kiwi theme for Ghostty
+# Inspired by the "Minimal Kiwi" VS Code theme by Pranjal Kumar
+# GitHub: https://github.com/pranjal-barnwal/minimal-kiwi
+
+# --- Core Colors ---
+# VS Code Editor background is #212121 (low-fatigue dark gray)
+# VS Code Terminal background is #191a1b (darker black)
+# We use #212121 by default to capture the signature minimal-kiwi editor look.
+background = 212121
+foreground = ecffff
+
+# --- Selection and Cursor ---
+# Signature Kiwi green for cursor, with background text color as contrast
+cursor-color = 82cd64
+cursor-text = 212121
+
+# Muted green-gray for text selection to keep it legible and themed
+selection-background = 42573d
+selection-foreground = ecffff
+
+# --- Terminal Color Palette (ANSI 0-15) ---
+# Taken directly from the VS Code theme's terminal color mappings
+
+# Black / Bright Black (Dark Gray / Light Gray-Green)
+palette = 0=#1d1f21
+palette = 8=#a8b4a8
+
+# Red / Bright Red (Coral Red accents)
+palette = 1=#ff6969
+palette = 9=#ff6969
+
+# Green / Bright Green (Kiwi Green accents)
+palette = 2=#6fc674
+palette = 10=#6fc674
+
+# Yellow / Bright Yellow (Soft Peach Yellow)
+palette = 3=#ffbb6c
+palette = 11=#ffbb6c
+
+# Blue / Bright Blue (Sky Blue)
+palette = 4=#78dcf3
+palette = 12=#78dcf3
+
+# Magenta / Bright Magenta (Muted Purple)
+palette = 5=#a36ac7
+palette = 13=#a36ac7
+
+# Cyan / Bright Cyan (Sky Blue/Cyan)
+palette = 6=#78dcf3
+palette = 14=#78dcf3
+
+# White / Bright White
+palette = 7=#c5c8c6
+palette = 15=#ffffff
