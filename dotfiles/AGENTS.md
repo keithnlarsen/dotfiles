@@ -39,3 +39,45 @@ into tmux, nvim, and the agent/terminal panes.
 
 - After config changes: `bash install.sh` (idempotent — re-links only what drifted), then open a new shell / reload the affected app (tmux `prefix r`, nvim restart, Ghostty reloads with `Cmd+Shift+,`).
 - Validate a Ghostty config edit: `/Applications/Ghostty.app/Contents/MacOS/ghostty +show-config` (exits non-zero and prints the offending key on error).
+
+## Setup (new machine)
+
+Agent-runnable bootstrap for a fresh macOS box. The repo root **is** `~/Development` — `.git`
+lives there, `dotfiles/` is a tracked subdir, sibling projects are gitignored. Apple Silicon
+assumed (brew at `/opt/homebrew`); for Intel see the last note.
+
+1. **Homebrew deps** (cask installs are idempotent — safe if Ghostty is already present):
+   ```sh
+   brew install tmux neovim fzf fd ripgrep lazygit bat starship gh
+   brew install --cask ghostty font-jetbrains-mono-nerd-font
+   ```
+   (`gh` only backs the `github.com` credential helper in `git/gitconfig`; optional on a machine
+   that never pushes to GitHub.)
+2. **Get the repo into `~/Development`** (this dir *is* the repo, not a subfolder). It's cloned
+   anonymously from public GitHub — no GitHub auth needed:
+   - Fresh/empty home: `git clone https://github.com/keithnlarsen/dotfiles.git ~/Development`
+   - `~/Development` already exists with projects — init in place (gitignored siblings untouched):
+     ```sh
+     cd ~/Development
+     git init && git remote add origin https://github.com/keithnlarsen/dotfiles.git
+     git fetch origin && git checkout -f main   # -f overwrites only tracked-path collisions
+     ```
+3. **Link**: `~/Development/dotfiles/install.sh` — symlinks everything; backs up replaced files
+   to `~/.dotfiles-backup/<ts>/`; appends the managed `source` line to `~/.zshrc`.
+4. **Machine-specific lines** (custom PATH exports, tokens) go in `~/.zshrc` **above** the
+   managed `source` line — never commit them.
+5. **Launch**: open Ghostty → it runs `ide` automatically. First `nvim` launch bootstraps
+   plugins via `lazy.nvim`; run `:Mason` for LSP servers.
+
+**Work machine (self-hosted GitLab, no GitHub).** Step 3 symlinks `~/.gitconfig` to the
+**personal** committed `git/gitconfig`, moving any existing `~/.gitconfig` into the backup dir —
+so on a machine already set up for work, reconcile git afterward:
+- **Commit identity**: the committed config sets `keithnlarsen@gmail.com` globally. Set the work
+  email manually (per-repo `git config user.email you@work`, or a local override). Keep the work
+  email and internal GitLab host **out of this public repo**.
+- **Auth**: SSH keys under `~/.ssh` are untouched by the symlink and keep working. If work GitLab
+  used an HTTPS credential helper in the old `~/.gitconfig`, re-apply it locally from the backup.
+  The `github.com`-scoped helper in `git/gitconfig` never touches GitLab.
+
+**Intel Macs**: brew is at `/usr/local` — update the hardcoded `/opt/homebrew` paths in
+`zsh/zprofile` and `git/gitconfig`.

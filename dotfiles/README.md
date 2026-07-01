@@ -43,9 +43,13 @@ overwrite is moved to `~/.dotfiles-backup/<timestamp>/` first.
 ### Dependencies
 
 ```sh
-brew install tmux neovim fzf fd ripgrep lazygit bat starship
+brew install tmux neovim fzf fd ripgrep lazygit bat starship gh
 brew install --cask ghostty font-jetbrains-mono-nerd-font
 ```
+
+(`gh` only backs the `github.com` credential helper — optional if you never push to GitHub. If
+`~/Development` already exists, init the repo in place instead of cloning. Work machines on
+self-hosted GitLab: see `dotfiles/AGENTS.md` → Setup for git identity/auth reconciliation.)
 
 Neovim bootstraps its own plugins via `lazy.nvim` on first launch; LSP servers are
 installed with `:Mason`.

@@ -24,8 +24,7 @@ $character"""
 
 right_format = """
 $nodejs$python$golang$rust\
-$cmd_duration\
-[](fg:comment)$time"""
+$cmd_duration"""
 
 [palettes.dracula]
 fg      = "#f8f8f2"
@@ -74,12 +73,6 @@ format = "[$all_status$ahead_behind ]($style)"
 min_time = 2000
 style = "fg:yellow"
 format = "[  took $duration ]($style)"
-
-[time]
-disabled = false
-style = "fg:fg bg:comment"
-format = "[  $time ]($style)"
-time_format = "%H:%M"
 
 [character]
 success_symbol = "[❯](bold green)"
